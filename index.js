@@ -43,14 +43,49 @@ async function run() {
       res.send(result);
       // console.log(result);
     });
-    //Get my orders fromorder collection
+    //Get my orders from order collection
     app.get("/myOrders/:email", async (req, res) => {
       const result = await ordersCollection
         .find({ email: req.params.email })
         .toArray();
       res.send(result);
     });
-    //
+    ////Get manage orders from order collection
+    app.get("/manageOrders", async (req, res) => {
+      const result = await ordersCollection.find({}).toArray();
+      res.send(result);
+    });
+    //delete from all orders
+    app.delete("/deleteOrder/:id", async (req, res) => {
+      const result = await ordersCollection.deleteOne({
+        _id: ObjectId(req.params.id),
+      });
+
+      // res.send(result);
+      console.log(result);
+    });
+    //get single service for update
+    app.get("/updateProduct/:id", async (req, res) => {
+      const id = req.params.id;
+
+      const result = await servicesCollection.findOne({ _id: ObjectId(id) });
+      res.send(result);
+    });
+    //put single service for update
+    app.put("/update/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedInfo = req.body;
+      const filter = { _id: ObjectId(id) };
+      const result = await servicesCollection.updateOne(filter, {
+        $set: {
+          image: updatedInfo.image,
+          name: updatedInfo.name,
+          price: updatedInfo.price,
+          details: updatedInfo.details,
+        },
+      });
+      console.log(result);
+    });
   } finally {
     // await client.close();
   }
