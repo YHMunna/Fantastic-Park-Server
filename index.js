@@ -24,16 +24,33 @@ async function run() {
     // console.log("database connected");
     const database = client.db("FantasyPark");
     const servicesCollection = database.collection("service");
+    const ordersCollection = database.collection("order");
 
-    //POST Api
-    app.post("/services", async (req, res) => {
-      const service = {
-        name: "waterkingdom",
-        ticket: "250",
-      };
+    //POST Api for addservice
+    app.post("/addService", async (req, res) => {
+      const service = req.body;
       const result = await servicesCollection.insertOne(service);
-      console.log(result);
+      res.send(result.insertedId);
     });
+    //GET API for show all service
+    app.get("/services", async (req, res) => {
+      const result = await servicesCollection.find({}).toArray();
+      res.send(result);
+    });
+    //Add Ride
+    app.post("/addRide", async (req, res) => {
+      const result = await ordersCollection.insertOne(req.body);
+      res.send(result);
+      // console.log(result);
+    });
+    //Get my orders fromorder collection
+    app.get("/myOrders/:email", async (req, res) => {
+      const result = await ordersCollection
+        .find({ email: req.params.email })
+        .toArray();
+      res.send(result);
+    });
+    //
   } finally {
     // await client.close();
   }
