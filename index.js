@@ -57,11 +57,12 @@ async function run() {
     });
     //delete from all orders
     app.delete("/deleteOrder/:id", async (req, res) => {
-      const result = await ordersCollection.deleteOne({
-        _id: ObjectId(req.params.id),
-      });
-
-      // res.send(result);
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: ObjectId(id) };
+      console.log(query);
+      const result = await ordersCollection.deleteOne(query);
+      res.json(result);
       console.log(result);
     });
     //get single service for update
@@ -76,7 +77,7 @@ async function run() {
       const id = req.params.id;
       const updatedInfo = req.body;
       const filter = { _id: ObjectId(id) };
-      const result = await servicesCollection.updateOne(filter, {
+      const result = await ordersCollection.updateOne(filter, {
         $set: {
           image: updatedInfo.image,
           name: updatedInfo.name,
@@ -84,6 +85,7 @@ async function run() {
           details: updatedInfo.details,
         },
       });
+      res.send(result);
       console.log(result);
     });
   } finally {
