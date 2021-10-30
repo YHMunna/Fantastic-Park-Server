@@ -58,18 +58,19 @@ async function run() {
     //delete from all orders
     app.delete("/deleteOrder/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id);
-      const query = { _id: ObjectId(id) };
-      console.log(query);
+      // console.log(id);
+      const query = { _id: id };
+      // console.log(query);
       const result = await ordersCollection.deleteOne(query);
       res.json(result);
-      console.log(result);
+      // console.log(result);
     });
+
     //get single service for update
     app.get("/updateProduct/:id", async (req, res) => {
       const id = req.params.id;
-
-      const result = await servicesCollection.findOne({ _id: ObjectId(id) });
+      const query = { _id: ObjectId(id) };
+      const result = await servicesCollection.findOne(query);
       res.send(result);
     });
     //put single service for update
@@ -77,15 +78,21 @@ async function run() {
       const id = req.params.id;
       const updatedInfo = req.body;
       const filter = { _id: ObjectId(id) };
-      const result = await ordersCollection.updateOne(filter, {
+      const options = { upsert: true };
+      const updateDoc = {
         $set: {
           image: updatedInfo.image,
           name: updatedInfo.name,
           price: updatedInfo.price,
           details: updatedInfo.details,
         },
-      });
-      res.send(result);
+      };
+      const result = await servicesCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.json(result);
       console.log(result);
     });
   } finally {
